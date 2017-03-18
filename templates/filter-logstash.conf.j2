@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+filter {
+    if [log_type] == "logstash" {
+        grok {
+            match => { "message" => "\[%{TIMESTAMP_ISO8601:timestamp}\s*\]\[%{LOGLEVEL:loglevel}\s*\]\[%{DATA:logger}\s*\] %{GREEDYDATA:data}" }
+        }
+    }
+}

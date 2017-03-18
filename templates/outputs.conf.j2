@@ -1,0 +1,35 @@
+# {{ ansible_managed }}
+output {
+    # This can be useful for debugging
+    #file {
+    #    path => "{{ logstash_log_dir }}/beats.log"
+    #}
+
+    {% if logstash_elasticsearch_hosts %}
+    if [index_name] {
+        elasticsearch {
+            hosts => {{ logstash_elasticsearch_hosts | to_json }}
+            {% if logstash_elasticsearch_user and logstash_elasticsearch_password %}
+            user => "{{ logstash_elasticsearch_user }}"
+            password => "{{ logstash_elasticsearch_password }}"
+            {% endif %}
+            # TODO: Enable TLS encryption
+            #ssl => true
+            #ssl_certificate_verification => false
+            index => "%{index_name}-%{+YYYY.MM.dd}"
+        }
+    } else {
+        elasticsearch {
+            hosts => {{ logstash_elasticsearch_hosts | to_json }}
+            {% if logstash_elasticsearch_user and logstash_elasticsearch_password %}
+            user => "{{ logstash_elasticsearch_user }}"
+            password => "{{ logstash_elasticsearch_password }}"
+            {% endif %}
+            # TODO: Enable TLS encryption
+            #ssl => true
+            #ssl_certificate_verification => false
+            index => "unknown-%{+YYYY.MM.dd}"
+        }
+    }
+    {% endif %}
+}

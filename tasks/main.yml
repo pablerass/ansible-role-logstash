@@ -1,0 +1,32 @@
+---
+# tasks file for logstash
+- name: "Repository key url"
+  apt_key:
+    url: "{{ elasticsearch_apt_key_url }}"
+
+- name: "Repository"
+  apt_repository:
+    repo: "{{ elasticsearch_apt_repo }}"
+    filename: "elasticsearch"
+
+- name: "Package"
+  apt:
+    name: "logstash"
+    update_cache: "yes"
+    cache_valid_time: 3600
+
+- name: "Configuration"
+  template:
+    src: "{{ item }}.conf.j2"
+    dest: "/etc/logstash/conf.d/{{ item }}.conf"
+  with_items:
+    - "inputs"
+    - "filter-logstash"
+    - "outputs"
+  notify: "Restart Logstash"
+
+- name: "Service"
+  service:
+    name: "logstash"
+    state: "started"
+    enabled: "yes"
