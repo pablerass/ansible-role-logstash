@@ -5,4 +5,9 @@ filter {
             match => { "message" => "\[%{TIMESTAMP_ISO8601:timestamp}\s*\]\[%{LOGLEVEL:loglevel}\s*\]\[%{DATA:logger}\s*\] %{GREEDYDATA:data}" }
         }
     }
+    if [log_type] == "json" {
+        json {
+            source => "message"
+        }
+    }
 }

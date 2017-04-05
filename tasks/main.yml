@@ -17,12 +17,20 @@
 
 - name: "Configuration"
   template:
-    src: "{{ item }}.conf.j2"
-    dest: "/etc/logstash/conf.d/{{ item }}.conf"
-  with_items:
-    - "inputs"
-    - "filter-logstash"
-    - "outputs"
+    src: "{{ item }}.j2"
+    dest: "{{ logstash_conf_dir }}/{{ item }}"
+  with_items: "{{ logstash_conf_files }}"
+  notify: "Restart Logstash"
+
+- name: "Current configuration files"
+  shell: ls "{{ logstash_conf_dir }}"
+  register: logstash_current_conf_files
+
+- name: "Unneeded configuration files"
+  file:
+    path: "{{ logstash_conf_dir }}/{{ item }}"
+    state: "{% if (not item in logstash_conf_files) %}absent{% else %}file{% endif %}"
+  with_items: "{{ logstash_current_conf_files.stdout_lines }}"
   notify: "Restart Logstash"
 
 - name: "Service"
