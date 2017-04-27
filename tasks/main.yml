@@ -25,6 +25,7 @@
 - name: "Current configuration files"
   shell: ls "{{ logstash_conf_dir }}"
   register: logstash_current_conf_files
+  changed_when: false
 
 - name: "Unneeded configuration files"
   file:
